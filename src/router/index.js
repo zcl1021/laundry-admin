@@ -31,32 +31,36 @@ export const constantRoutes = [
     }]
   },
 
+ 
+
+  // 404 page must be placed at the end !!!
+  { path: '*', redirect: '/404', hidden: true }
+]
+export const asyncRoutes =[
   {
     path: '/user',
     component: Layout,
     redirect: '/user/list',
     name: 'Example',
-    meta: { title: '用户管理', icon: 'el-icon-s-help' },
+    meta: { title: '用户管理', icon: 'el-icon-s-help' ,roles: ['admin','editor']},
     children: [
       {
         path: 'list',
         name: 'UserList',
         component: () => import('@/views/user/list'),
-        meta: { title: '用户列表', icon: 'table' }
+        meta: { title: '用户列表', icon: 'table' ,roles: ['admin','editor']}
       },
       {
         path: 'creat',
         name: 'UserCreate',
         component: () => import('@/views/user/form'),
-        meta: { title: '添加用户', icon: 'tree' }
+        meta: { title: '添加用户', icon: 'tree',roles: ['admin'] }
       }
     ]
   },
-
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+   // 404 page must be placed at the end !!!
+   { path: '*', redirect: '/404', hidden: true }
 ]
-
 
 
 const createRouter = () => new Router({

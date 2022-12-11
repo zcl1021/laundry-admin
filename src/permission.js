@@ -26,19 +26,31 @@ router.beforeEach(async(to, from, next) => {
       next({ path: '/' })
       NProgress.done()
     } else {
-      const hasGetUserInfo = store.getters.name
-      if (hasGetUserInfo) {
+      //这里指的是src/store/getters.js的roles
+      const hasRoles = store.getters.roles && store.getters.roles.length > 0
+      console.log(hasRoles+"1111")
+      if (hasRoles) {
         next()
       } else {
         try {
           // get user info
-          await store.dispatch('user/getInfo')
-
-          next()
+          //获取roles
+          const { roles } = await store.dispatch('user/getInfo')//第一步
+          console.log("获取roles")
+          console.log(roles)
+          //获取通过权限验证的路由
+          const accessRoutes = await store.dispatch('permission/generateRoutes', roles)//第二步
+          console.log("获取路由")
+          console.log(accessRoutes+"333333")
+         //更新加载路由
+          router.options.routes = store.getters.permission_routes//第三步
+          router.addRoutes(accessRoutes)
+          console.log(store)
+          next({ ...to, replace: true })
         } catch (error) {
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')
-          Message.error(error || 'Has Error')
+          Message.error('Has Error1231313')
           next(`/login?redirect=${to.path}`)
           NProgress.done()
         }
